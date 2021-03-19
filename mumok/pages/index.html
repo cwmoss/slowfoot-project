@@ -1,0 +1,15 @@
+<?
+
+layout("default");
+paginate("article")
+?>
+
+<h2>Hallo Welt!</h2>
+
+<h3>das ist der start</h3>
+
+<ul>
+    <?foreach($articles as $art){?>
+        <li><a href="<?=$path($art['_id'])?>"><?=$art['title']?></a></li>
+    <?}?>
+</ul>
