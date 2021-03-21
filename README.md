@@ -4,6 +4,8 @@
 
 ```
 git clone https://github.com/cwmoss/slowfoot.git
+cd slowfoot
+composer install
 
 # develop site
 php -S localhost:1199 -t mumok/ dev.php
