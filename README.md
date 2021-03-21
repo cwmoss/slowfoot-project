@@ -2,8 +2,15 @@
 
 ## install
 
+```
+git clone https://github.com/cwmoss/slowfoot.git
 
-`php -S localhost:1199 -t mumok/ dev.php`
+# develop site
+php -S localhost:1199 -t mumok/ dev.php
+
+# build site
+php build.php
+```
 
 ### optional
 
