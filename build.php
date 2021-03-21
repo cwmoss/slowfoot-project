@@ -11,8 +11,8 @@ require_once 'helper.php';
 require_once 'slft_fun.php';
 include 'template_helper.php';
 
-//$dataset = 'dataset-mumok.ndjson';
-$dataset = 'wp.json';
+$dataset = 'dataset-mumok.ndjson';
+//$dataset = 'wp.json';
 
 print memory_get_usage() . "\n";
 
@@ -43,6 +43,9 @@ $pages = glob($src . '/pages/*.html');
 $pages = array_map(function ($p) {
     return '/' . basename($p, '.html');
 }, $pages);
+
+//print 'clean up dist/';
+//`rm -rf $dist`;
 
 foreach ($templates as $type => $conf) {
     //$count = query('');

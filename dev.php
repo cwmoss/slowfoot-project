@@ -13,8 +13,8 @@ include 'routing.php';
 require_once 'slft_fun.php';
 include 'template_helper.php';
 
-$dataset = 'wp.json';
-//$dataset = 'dataset-mumok.ndjson';
+//$dataset = 'wp.json';
+$dataset = 'dataset-mumok.ndjson';
 
 include $src . '/config.php';
 

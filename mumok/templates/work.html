@@ -4,15 +4,21 @@ layout('default');
 #$links = query('*[_id=="$id"]{articles[]->, pix[]->}[0]', ['id' =>$_id]);
 #var_dump($links);
 $links = [];
+$title = $originaltitle ?? $title_de ?? $title_en ?? 'k.a.'; 
 ?>
 <section>
 <h2><?=$title?></h2>
 
 <p><?=$text?></p>
-
+<?if($default_image){?>
+	<img src="<?=$default_image?>">
+<?}?>
 <ul>
-	<?if($links['articles'])foreach($links['articles'] as $art){?>
-		<li><a href="<?=path($art['_id'])?>"><?=$art['title']?></a></li>
+	<?if($artists)foreach($artists as $artref){
+		$art = $ref($artref);
+		
+		?>
+		<li><a href="<?=$path($art)?>"> <?=$art['firstname']?> <?=$art['familyname']?></a></li>
 	<?}?>
 </ul>
 

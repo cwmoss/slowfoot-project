@@ -23,12 +23,48 @@ function query($ds, $filter) {
 
 function evaluate($cond, $data) {
     foreach ($cond as $k => $v) {
-        if ($data[$k] != $v) {
+        $ok = evaluate_single($k, $v, $data);
+        if (!$ok) {
             return false;
         }
     }
     return true;
 }
+function evaluate_single($key, $value, $data) {
+    $nested = explode('.', $key);
+    $current = array_shift($nested);
+
+    if ($nested) {
+        return evaluate_single(join('.', $nested), $value, $data[$current]);
+    }
+
+    if (!$data) {
+        return false;
+    }
+
+    if (!is_assoc($data)) {
+        return array_find($data, $value, $current);
+    } else {
+        return $data[$current] == $value;
+    }
+}
+
+function array_find($haystack, $needle, $prop) {
+    foreach ($haystack as $val) {
+        if ($val[$prop] == $needle) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function is_assoc(array $arr) {
+    if ([] === $arr) {
+        return false;
+    }
+    return array_keys($arr) !== range(0, count($arr) - 1);
+}
+
 function slow_query($q, $vars = []) {
     $q = str_replace(array_map(function ($k) {
         return '$' . $k;

@@ -1,5 +1,5 @@
 <?php
-
+/*
 $templates = [
     'post' => [
         'path' => function ($obj) {
@@ -17,12 +17,13 @@ $hooks = [
     }
 ];
 return ;
+*/
 
 $templates = [
     'artist' => [
         'path' => function ($obj) use ($slugger) {
             $title = $obj['firstname'] . ' ' . $obj['familyname'];
-            return '/' . URLify::filter($title, 60, 'de');
+            return '/artist/' . URLify::filter($title, 60, 'de');
             return slugify($slugger, $obj['firstname'] . ' ' . $obj['familyname']);
             return "/a/{$obj['_id']}";
         },
@@ -32,7 +33,7 @@ $templates = [
     'work' => [
         'path' => function ($obj) use ($slugger) {
             $title = $obj['title_de'] ?? $obj['title_en'] ?? $obj['_id'];
-            return '/' . URLify::filter($title, 60, 'de');
+            return '/work/' . URLify::filter($title, 60, 'de');
             return slugify($slugger, $obj['title_de'] ?? $obj['_id']);
             return "/w/{$obj['_id']}";
         },

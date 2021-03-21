@@ -1,9 +1,17 @@
 <?php
 layout('default');
 
-#$links = query('*[_id=="$id"]{articles[]->, pix[]->}[0]', ['id' =>$_id]);
+//$links = query('*[_id=="$id"]{articles[]->, pix[]->}[0]', ['id' =>$_id]);
 $links = [];
-$subtitle = "untertitel";
+$subtitle = 'untertitel';
+// $works = $query(['_type' => 'work', 'artists._ref' => $_id]);
+//var_dump($works);
+
+if ($works) {
+    $works = array_map(function ($w) use ($ref) {
+        return $ref($w);
+    }, $works);
+}
 ?>
 <article>
 <h2><?=$firstname?> <?=$familyname?>  </h2>
@@ -13,9 +21,13 @@ $subtitle = "untertitel";
 <p><?=markdown($text)?></p>
 
 <ul>
-	<?if($links['articles']) foreach($links['articles'] as $art){?>
-		<li><a href="<?=$path($art['_id'])?>"><?=$art['title']?></a></li>
-	<?}?>
+	<?if ($works) {
+    foreach ($works as $work) {
+        $title = $work['originaltitle'] ?? $work['title_de'] ?? $work['title_en'] ?? 'k.a.'; ?>
+		<li><a href="<?=$path($work)?>"><?=$title?></a></li>
+	<?php
+    }
+}?>
 </ul>
 
 

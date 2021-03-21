@@ -12,6 +12,10 @@ function load_template_helper($ds, $paths, $src) {
         'ref' => function ($oid) use ($ds) {
             return ref($ds, $oid);
         },
+        'query' => function ($q) use ($ds) {
+            //print "-- $oid";
+            return query($ds, $q);
+        },
         'partial' => function ($template, $data) use ($src) {
             //dbg('+++ partial src', $src);
             return partial($src, $template, $data, []);
