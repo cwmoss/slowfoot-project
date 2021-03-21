@@ -3,19 +3,25 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <link rel="SHORTCUT ICON" href="/favicon.ico">
-    <link rel="stylesheet" href="/css/app.css" type="text/css">
+    <link rel="stylesheet" href="<?=PATH_PREFIX?>/css/app.css" type="text/css">
+    
     <title><?=$title?></title>
-</head>
-<body>
 
-<h1>AFF</h1>
-<main>
+</head>
+<body data-barba="wrapper">
+
+<h1>MOMUK</h1>
+<h2><?=$subtitle?></h2>
+<main data-barba="container" data-barba-namespace="home">
+
     <?=$content?>
+
 </main>
 
 <footer>
 &copy; 2021
 </footer>
+
 </body>
 <?php
 //new HotReloader\HotReloader('//localhost:1199/phrwatcher.php');

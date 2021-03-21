@@ -1,7 +1,11 @@
+<page>
+    artist
+</page>
 <?
 
 layout("default");
-paginate("article")
+//paginate("artist");
+
 ?>
 
 <h2>Hallo Welt!</h2>
@@ -9,7 +13,10 @@ paginate("article")
 <h3>das ist der start</h3>
 
 <ul>
-    <?foreach($articles as $art){?>
-        <li><a href="<?=$path($art['_id'])?>"><?=$art['title']?></a></li>
+    <?foreach($paginated[0] as $art){?>
+        <li><a href="<?=$path($art)?>"><?=$art['firstname']?> <?=$art['familyname']?></a></li>
     <?}?>
+
 </ul>
+
+<?=$partial("pagination", ['page'=>'index', 'info'=>$paginated[1]])?>
