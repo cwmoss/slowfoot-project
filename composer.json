@@ -1,6 +1,6 @@
 {
     "name": "cwmoss/slowfoot",
-    "version": "0.1",
+    "version": "1.0",
     "require": {
         "spatie/async": "^1.5",
         "felippe-regazio/php-hot-reloader": "dev-master",
