@@ -16,9 +16,25 @@ function query($ds, $filter) {
     if (is_string($filter)) {
         $filter = ['_type' => $filter];
     }
-    return array_filter($ds, function ($row) use ($filter) {
+    $rs = array_filter($ds, function ($row) use ($filter) {
         return evaluate($filter, $row);
     });
+
+    if ($filter['_type'] == 'artist') {
+        $skey = 'firstname';
+    }
+
+    if ($skey) {
+        dbg('... sorting..');
+        usort($rs, build_sorter($skey));
+    }
+    return $rs;
+}
+
+function build_sorter($key) {
+    return function ($a, $b) use ($key) {
+        return strnatcmp($a[$key], $b[$key]);
+    };
 }
 
 function evaluate($cond, $data) {
