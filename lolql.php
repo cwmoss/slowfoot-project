@@ -3,7 +3,7 @@
 
 lolql - lowlevel query language
 
-make queries easy and keep it simple
+make queries easy & keep it simple
 */
 
 namespace lolql;
@@ -28,7 +28,7 @@ function query($ds, $filter) {
 }
 
 function parse($string) {
-    $string = trim(str_replace(["\r", "\n"], '', $string));
+    $string = normalize($string);
     if (!$string) {
         // no string, no data
         return [];
@@ -38,7 +38,39 @@ function parse($string) {
         $res[trim($kv[0])] = $kv[1];
         return $res;
     }, []);
-    return $parts;
+    $qk = array_key_first($parts);
+    print_r($parts);
+    print_r(parse_condition($parts[$qk][1][0]));
+    // \dbg('first key', $qk, '😂');
+    $q = array_map_recursive(fn ($it) => parse_condition($it), $parts[$qk]);
+    //array_walk_recursive($parts[$qk], function (&$val, $idx) {
+    //    $val = parse_condition($val);
+    //});
+    //print_r($parts[$qk]);
+
+    //print_r($q);
+    if (!($qk == '*' || $qk == '😂')) {
+        array_unshift(
+            $q,
+            ['l' => ['t' => 'n', 'v' => '_type'],
+                'o' => '==',
+                'r' => ['t' => 'v', 'v' => $qk],
+                'x' => '&&'
+            ]
+        );
+    }
+    $order = parse_order($parts['order'][0]);
+    return ['q' => $q, 'order' => $order, 'limit' => $parts['limit'][0]];
+}
+
+function parse_order($order) {
+    if (!$order) {
+        return [];
+    }
+    return array_map('\lolql\words', explode(',', $order));
+}
+function words($string) {
+    return array_filter(explode(' ', $string), 'trim');
 }
 /**
      * Parse a string into an array.
@@ -108,4 +140,78 @@ function parse_parentheses($string) {
         $push($current, $string, $buffer_start, $position);
     }
     return $current;
+}
+
+function normalize($string) {
+    return join(' ', array_filter(
+        explode("\n", $string),
+        fn ($line) => trim($line)[0] != '#'
+    ));
+}
+
+function parse_condition($string) {
+    $t = token_get_all('<?' . $string . '?>');
+    $t = compact_tokens($t);
+    //print_r($t);
+    $t = combine_tokens($t);
+    //print_r($t);
+    return $t;
+}
+
+function combine_tokens($tokens) {
+    $buffer = ['l' => ['t' => null, 'v' => []], 'o' => null, 'r' => ['t' => null, 'v' => []], 'x' => null];
+    $lr = 'l';
+    $res = [];
+    foreach ($tokens as $item) {
+        if ($item == '&&' || $item == '||') {
+            $buffer['x'] = $item;
+            $res[] = $buffer;
+            $buffer = ['l' => ['t' => null, 'v' => []], 'o' => null, 'r' => ['t' => null, 'v' => []], 'x' => null];
+            $lr = 'l';
+            continue;
+        }
+        if (in_array($item, ['==', 'in', '!=', '>', '<', '<=', '>='])) {
+            $buffer['o'] = $item;
+            $lr = 'r';
+        } elseif ($item[0] == '"') {
+            $buffer[$lr]['v'][] = trim($item, '"');
+            if (!$buffer[$lr]['t']) {
+                $buffer[$lr]['t'] = 'v';
+            }
+        } elseif (!in_array($item, ['[', ']', '.', ','])) {
+            $buffer[$lr]['v'][] = $item;
+            if (!$buffer[$lr]['t']) {
+                $buffer[$lr]['t'] = 'n';
+            }
+        }
+    }
+    if ($buffer && $buffer['o']) {
+        $res[] = $buffer;
+    }
+    return $res;
+}
+
+function compact_tokens($t) {
+    $t = array_map(function ($tok) {
+        if (is_array($tok)) {
+            return $tok[1] == '<?' || $tok[1] == '?>' ? '' : $tok[1];
+        }
+        return $tok;
+    }, $t);
+    $t = array_filter($t, 'trim');
+    return $t;
+}
+
+function yyarray_map_recursive($fn, $arr) {
+    return array_map(function ($item) use ($fn) {
+        return is_array($item) ? array_map($fn, $item) : $fn($item);
+    }, $arr);
+}
+
+function array_map_recursive($callback, $array) {
+    $func = function ($item) use (&$func, &$callback) {
+        return is_array($item) ? array_map($func, $item) : call_user_func($callback, $item);
+    };
+
+    return array_map($func, $array);
 }
