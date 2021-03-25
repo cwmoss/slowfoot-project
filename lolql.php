@@ -19,10 +19,12 @@ function query($ds, $filter) {
     if ($filter['_type'] == 'artist') {
         $skey = 'firstname';
     }
+    $s_fn = build_order_fun('firstname, familyname desc');
 
-    if ($skey) {
-        dbg('... sorting..');
-        usort($rs, build_sorter($skey));
+    if ($s_fn) {
+        dbg('... query sorting..');
+        // usort($rs, build_sorter($skey));
+        usort($rs, $s_fn);
     }
     return $rs;
 }
@@ -59,8 +61,52 @@ function parse($string) {
             ]
         );
     }
-    $order = parse_order($parts['order'][0]);
+    $order = build_order_fun($parts['order'][0]);
     return ['q' => $q, 'order' => $order, 'limit' => $parts['limit'][0]];
+}
+
+function build_order_fun($order) {
+    $orders = parse_order($order);
+    if (!$order) {
+        return null;
+    }
+    $os = [];
+    foreach ($orders as $k => $o) {
+        //$key = $dir = $cmp = null;
+        // keys must start with 0, 1, 2...
+        list($key, $dir, $cmp) = array_merge($o);
+        //print "key, $key";
+        if ($dir && ($dir != 'asc' && $dir != 'desc')) {
+            $cmp = $dir;
+            $dir = 'asc';
+        } elseif (!$dir) {
+            $dir = 'asc';
+        }
+        $os[] = [
+            'k' => $key,
+            'd' => $dir,
+            'c' => $cmp
+        ];
+    }
+    $coll = collator_create('de_DE');
+    return function ($a, $b) use ($os, $coll) {
+        foreach ($os as $order) {
+            //$cmp = 'strnatcasecmp';
+            $cmp = 'collator_compare';
+            $r = $cmp($coll, $a[$order['k']], $b[$order['k']]);
+            if ($r) {
+                return $order['d'] == 'desc' ? (-1 * $r) : $r;
+            }
+        }
+        return 0;
+        //return strnatcmp($a[$key], $b[$key]);
+    };
+}
+
+function xxxbuild_sorter($key) {
+    return function ($a, $b) use ($key) {
+        return strnatcmp($a[$key], $b[$key]);
+    };
 }
 
 function parse_order($order) {

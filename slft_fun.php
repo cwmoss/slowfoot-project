@@ -1,4 +1,5 @@
 <?php
+require_once 'lolql.php';
 
 function load_data($dataset, $hooks) {
     $db = [];
@@ -24,17 +25,62 @@ function query($ds, $filter) {
         $skey = 'firstname';
     }
 
-    if ($skey) {
+    $sfn = \lolql\build_order_fun('firstname, familyname');
+
+    if ($sfn) {
         dbg('... sorting..');
-        usort($rs, build_sorter($skey));
+        usort($rs, $sfn);
+        // usort($rs, build_sorter($skey));
     }
     return $rs;
 }
 
 function build_sorter($key) {
     return function ($a, $b) use ($key) {
-        return strnatcmp($a[$key], $b[$key]);
+        return strnatcasecmp($a[$key], $b[$key]);
     };
+}
+
+function chunked_paginate($ds, $rule) {
+    $limit = 20;
+    if (!$page) {
+        $page = 1;
+    }
+    $all = query($ds, $rule);
+    $total = count($all);
+    $totalpages = ceil($total / $limit);
+    foreach (range(1, $totalpages) as $page) {
+        $offset = ($page - 1) * $limit;
+        $res = array_slice($all, $offset, $limit);
+        $info = ['total' => $total, 'totalpages' => $totalpages, 'page' => $page,
+            'limit' => $limit, 'real' => count($res),
+            'prev' => ($page - 1) ?: null,
+            'next' => (($page + 1) <= $totalpages) ?: null
+        ];
+        yield [$res, $info];
+    }
+}
+
+function db_paginate($ds, $rule, $page = 1) {
+    $limit = 20;
+    $all = [];
+    if (!$page) {
+        $page = 1;
+    }
+
+    $all = query($ds, $rule);
+
+    $total = count($all);
+    $totalpages = ceil($total / $limit);
+    $offset = ($page - 1) * $limit;
+    dbg('paginate', $page, $offset);
+    $res = array_slice($all, $offset, $limit);
+    $info = ['total' => $total, 'totalpages' => $totalpages, 'page' => $page,
+        'limit' => $limit, 'real' => count($res),
+        'prev' => ($page - 1) ?: null,
+        'next' => (($page + 1) <= $totalpages) ?: null
+    ];
+    return [$res, $info];
 }
 
 function evaluate($cond, $data) {
@@ -207,52 +253,6 @@ function page_paginated($_template, $data, $_base) {
         $content = ob_get_clean();
     }
     return $content;
-}
-
-function chunked_paginate($ds, $rule) {
-    $limit = 20;
-    if (!$page) {
-        $page = 1;
-    }
-    $all = query($ds, $rule);
-    $total = count($all);
-    $totalpages = ceil($total / $limit);
-    foreach (range(1, $totalpages) as $page) {
-        $offset = ($page - 1) * $limit;
-        $res = array_slice($all, $offset, $limit);
-        $info = ['total' => $total, 'totalpages' => $totalpages, 'page' => $page,
-            'limit' => $limit, 'real' => count($res),
-            'prev' => ($page - 1) ?: null,
-            'next' => (($page + 1) <= $totalpages) ?: null
-        ];
-        yield [$res, $info];
-    }
-}
-function db_paginate($db, $rule, $page = 1) {
-    $limit = 20;
-    $all = [];
-    if (!$page) {
-        $page = 1;
-    }
-    //print $rule;
-    foreach ($db as $id => $row) {
-        // print $row['_type'];
-        if ($row['_type'] == $rule) {
-            $all[] = $row;
-        }
-    }
-
-    $total = count($all);
-    $totalpages = ceil($total / $limit);
-    $offset = ($page - 1) * $limit;
-    dbg('paginate', $page, $offset);
-    $res = array_slice($all, $offset, $limit);
-    $info = ['total' => $total, 'totalpages' => $totalpages, 'page' => $page,
-        'limit' => $limit, 'real' => count($res),
-        'prev' => ($page - 1) ?: null,
-        'next' => (($page + 1) <= $totalpages) ?: null
-    ];
-    return [$res, $info];
 }
 
 function paginate($how = null) {

@@ -3,7 +3,7 @@ require 'helper.php';
 require_once 'lolql.php';
 use function lolql\{parse};
 
-$test[] = '😂(_type == "article" && (status != "draft" || posted_by == "importer"))  order(created_at desc) limit(11) ok ';
+$test[] = '😂(_type == "article" && (status != "draft" || posted_by == "importer"))  order(name, familyname desc number) limit(11) ok ';
 $test[] = 'article() order (created_at)';
 $test[] = 'work() order (created_at)';
 $test[] = '*() order (created_at)';
