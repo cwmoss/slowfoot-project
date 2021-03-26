@@ -1,6 +1,9 @@
-<page>
-    artist
-</page>
+<page-query>
+    artist()
+    order(firstname, familyname) 
+    limit(20)
+</page-query>
+
 <?
 
 layout("default");
@@ -13,10 +16,10 @@ layout("default");
 
 
 <ul>
-    <?foreach($paginated[0] as $art){?>
+    <?foreach($collection['items'] as $art){?>
         <li><a href="<?=$path($art)?>"><?=$art['firstname']?> <?=$art['familyname']?></a></li>
     <?}?>
 
 </ul>
 
-<?=$partial("pagination", ['page'=>'index', 'info'=>$paginated[1]])?>
+<?=$partial("pagination", ['page'=>'index', 'info'=>$collection['info']])?>

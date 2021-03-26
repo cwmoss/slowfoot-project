@@ -4,17 +4,35 @@ layout('default');
 #$links = query('*[_id=="$id"]{articles[]->, pix[]->}[0]', ['id' =>$_id]);
 #var_dump($links);
 $links = [];
-$title = $originaltitle ?? $title_de ?? $title_en ?? 'k.a.'; 
+$title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.a.'; 
 ?>
 <section>
-<h2><?=$title?></h2>
+<h2><?=$page['title']?></h2>
 
-<p><?=$text?></p>
-<?if($default_image){?>
-	<img src="<?=$default_image?>">
+<p><strong><?=$page['title_de']?:$page['originaltitle']?></strong><br><br><?=$page['description_de']?></p>
+
+<div class="material">
+	<?=$page['material_de']?> <?=$page['measurement_width']?> x <?=$page['measurement_height']?> x <?=$page['measurement_depth']?> <?=$page['measurement_unit']?>
+</div>
+
+<p><strong><?=$page['title_en']?></strong><br><br><?=$page['description_en']?></p>
+
+<div class="material">
+	<?=$page['material_en']?> <?=$page['measurement_width']?> x <?=$page['measurement_height']?> x <?=$page['measurement_depth']?> <?=$page['measurement_unit']?>
+</div>
+
+<?if($page['default_image']){?>
+	<img id="image" data-src="<?=$page['default_image']?>" style="display:none;">
 <?}?>
-<ul>
-	<?if($artists)foreach($artists as $artref){
+
+<div class="production">
+	<?=$page['production_date']?><br>
+	<?=$page['creditline']?> <?=$page['acquiry_date']?><br>
+	<?=$page['exploitation_rights']?>
+</div>
+
+<ul class="artists">
+	<?if($page['artists'])foreach($page['artists'] as $artref){
 		$art = $ref($artref);
 		
 		?>
@@ -22,4 +40,41 @@ $title = $originaltitle ?? $title_de ?? $title_en ?? 'k.a.';
 	<?}?>
 </ul>
 
+<div class="tags">
+	<?=$page['tags']?>
+</div>
 </section>
+
+<?php
+/*
+  "measurement_height":80.5,"inventorynr_sorted":"P 00001\/000","creditline":"erworben\/acquired in","title_en":"Construction Design for an Airport",
+ 
+	   "in_exhibition":"yes","exploitation_rights":"Bildrecht, Wien","material_de":"Bronze, Glas","measurement_depth":85,
+	   "originaltitle":"Konstruktion f\u00fcr einen Flughafen","default_image":"https:\/\/www.mumok.at\/imageobject.php?objid=1","inventorynr":"P 1\/0","measurement_unit":"cm"}
+*/
+?>
+<script>
+$('document').ready(function() {
+	console.log("init")
+// 250 × 32 is "couldn't get image"
+	$('#image').on('load', function(){
+		console.log('loaded', this)
+		if(this.width!=250 && this.height != 32){
+			$(this).css("display", "block")
+		}
+	}).each(function(){
+		console.log("img", this)
+		$(this).prop("src", $(this).data("src"))
+	})
+
+})
+
+/*
+const img = new Image();
+img.onload = function() {
+	alert(this.width + 'x' + this.height);
+}
+img.src = 'http://....';
+*/
+
+</script>

@@ -1,6 +1,9 @@
 <?php
 require_once 'lolql.php';
 
+use function lolql\parse;
+use function lolql\query as lquery;
+
 function load_data($dataset, $hooks) {
     $db = [];
     foreach (file($dataset) as $line) {
@@ -42,11 +45,8 @@ function build_sorter($key) {
 }
 
 function chunked_paginate($ds, $rule) {
-    $limit = 20;
-    if (!$page) {
-        $page = 1;
-    }
-    $all = query($ds, $rule);
+    $limit = $rule['limit'] ?? 20;
+    $all = lquery($ds, $rule);
     $total = count($all);
     $totalpages = ceil($total / $limit);
     foreach (range(1, $totalpages) as $page) {
@@ -61,14 +61,11 @@ function chunked_paginate($ds, $rule) {
     }
 }
 
-function db_paginate($ds, $rule, $page = 1) {
-    $limit = 20;
-    $all = [];
-    if (!$page) {
-        $page = 1;
-    }
+function query_page($ds, $rule, $page = 1) {
+    $limit = $rule['limit'] ?? 20;
+    $page = $page ?? 1;
 
-    $all = query($ds, $rule);
+    $all = lquery($ds, $rule);
 
     $total = count($all);
     $totalpages = ceil($total / $limit);
@@ -80,7 +77,7 @@ function db_paginate($ds, $rule, $page = 1) {
         'prev' => ($page - 1) ?: null,
         'next' => (($page + 1) <= $totalpages) ?: null
     ];
-    return [$res, $info];
+    return ['items' => $res, 'info' => $info];
 }
 
 function evaluate($cond, $data) {
@@ -190,7 +187,7 @@ function partial($base, $template, $data, $helper) {
 
 function remove_tags($content) {
     //dbg('remove...');
-    $content = preg_replace('!<page>.*?</page>!ism', '', $content);
+    $content = preg_replace('!<page-query>.*?</page-query>!ism', '', $content);
     return $content;
 }
 
@@ -226,19 +223,13 @@ function page($_template, $data, $helper, $_base) {
 }
 
 function check_pagination($_template, $_base) {
-    ob_start();
     $content = file_get_contents($_base . '/pages/' . $_template . '.html');
-    $prule = preg_match('!<page>(.*?)</page>!ism', $content, $mat);
+    $prule = preg_match('!<page-query>(.*?)</page-query>!ism', $content, $mat);
     if ($prule) {
-        $prule = trim($mat[1]);
-        dbg('++ prule', $prule);
+        return parse($mat[1]);
+    } else {
+        return false;
     }
-    return $prule;
-
-    $content = ob_get_clean();
-    $prule = paginate();
-    paginate('-');
-    return $prule;
 }
 
 function page_paginated($_template, $data, $_base) {

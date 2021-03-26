@@ -7,16 +7,18 @@ $subtitle = 'untertitel';
 // $works = $query(['_type' => 'work', 'artists._ref' => $_id]);
 //var_dump($works);
 
-if ($works) {
+if ($page['works']) {
     $works = array_map(function ($w) use ($ref) {
         return $ref($w);
-    }, $works);
+    }, $page['works']);
 }
 ?>
 <article>
-<h2><?=$firstname?> - <?=$familyname?>  </h2>
+<h2><?=$page['firstname']?> <?=$page['familyname']?>  </h2>
 
-<p></p>
+<p>geb. <?=$page['birthyear']?> <?=$page['cityofbirth_de']?>  
+    <?if($page['deathyear']){?><br>gest. <?=$page['deathyear']?>  <?=$page['cityofdeath_en']?><?}?>
+</p>
 
 <p><?=markdown($text)?></p>
 

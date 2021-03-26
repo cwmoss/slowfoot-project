@@ -1,14 +1,28 @@
 <?php
 /*
 
-lolql - lowlevel query language
+lolql - lovely query language
 
 make queries easy & keep it simple
 */
 
 namespace lolql;
 
-function query($ds, $filter) {
+require_once __DIR__ . '/compare.php';
+
+function query($ds, $query) {
+    $query = is_string($query) ? parse($query) : $query;
+
+    $rs = eval_cond($ds, $query['q']);
+
+    if ($query['order']) {
+        usort($rs, $query['order']);
+    }
+
+    return $rs;
+}
+
+function xxquery($ds, $filter) {
     if (is_string($filter)) {
         $filter = ['_type' => $filter];
     }
@@ -31,6 +45,7 @@ function query($ds, $filter) {
 
 function parse($string) {
     $string = normalize($string);
+    dbg('++ parse lolql query', $string);
     if (!$string) {
         // no string, no data
         return [];
@@ -41,8 +56,8 @@ function parse($string) {
         return $res;
     }, []);
     $qk = array_key_first($parts);
-    print_r($parts);
-    print_r(parse_condition($parts[$qk][1][0]));
+    // print_r($parts);
+    // print_r(parse_condition($parts[$qk][1][0]));
     // \dbg('first key', $qk, '😂');
     $q = array_map_recursive(fn ($it) => parse_condition($it), $parts[$qk]);
     //array_walk_recursive($parts[$qk], function (&$val, $idx) {
@@ -51,18 +66,150 @@ function parse($string) {
     //print_r($parts[$qk]);
 
     //print_r($q);
-    if (!($qk == '*' || $qk == '😂')) {
+    if (!($qk == '*' || $qk == '😂' || $qk == '❤️')) {
         array_unshift(
             $q,
-            ['l' => ['t' => 'n', 'v' => '_type'],
+            [
+                'l' => ['t' => 'k', 'c' => ['_type']],
                 'o' => '==',
-                'r' => ['t' => 'v', 'v' => $qk],
+                'r' => ['t' => 'v', 'c' => [$qk]],
                 'x' => '&&'
             ]
         );
     }
     $order = build_order_fun($parts['order'][0]);
     return ['q' => $q, 'order' => $order, 'limit' => $parts['limit'][0]];
+}
+
+function eval_cond($db, $query) {
+    $evaluator = function ($query, $item, $level = 0) use (&$evaluator) {
+        // dbg('level... ', $level);
+        foreach ($query as $q) {
+            if (!is_assoc($q)) {
+                //print "\n\nhuhu\n\n";
+                //\dbg('.. klammer', $q);
+                [$ok, $next] = $evaluator($q, $item, $level + 1);
+            } else {
+                $ok = evaluate_single($q['l'], $q['r'], $q['o'], $item);
+                $next = $q['x'];
+            }
+
+            //   dbg('eval result', $ok, $next);
+            if (!$ok && $next == '&&') {
+                return [false, $next];
+            }
+            if ($ok && $next == '||') {
+                return [true, $next];
+            }
+        }
+        return [$ok, null];
+    };
+
+    return array_filter($db, function ($item) use ($query, $evaluator) {
+        dbg('item-compare...', $item['_id'], $item['title']);
+        [$ok, $next] = $evaluator($query, $item);
+        return $ok;
+    });
+}
+
+function xxeval_cond($db, $query) {
+    $evaluator = function ($query, $item, $level = 0) use (&$evaluator) {
+        dbg('level... ', $level);
+        foreach ($query as $q) {
+            if (!is_assoc($q)) {
+                //print "\n\nhuhu\n\n";
+                //\dbg('.. klammer', $q);
+                $ok = $evaluator($q, $item, $level + 1);
+            } else {
+                $ok = evaluate_single($q['l'], $q['r'], $q['o'], $item);
+            }
+
+            dbg('eval result', $ok, $q['x']);
+            if (!$ok && $q['x'] == '&&') {
+                return false;
+            }
+            if ($ok && $q['x'] == '||') {
+                return true;
+            }
+        }
+        return $ok;
+    };
+
+    return array_filter($db, function ($item) use ($query, $evaluator) {
+        dbg('item-compare...', $item['_id'], $item['title']);
+        return $evaluator($query, $item);
+    });
+
+    /*
+    return array_filter($db, function ($item) use ($query) {
+        foreach ($query as $q) {
+            $ok = evaluate_single($q['l'], $q['r'], $q['o'], $item);
+            dbg('eval result', $ok);
+            if (!$ok && $q['x'] == '&&') {
+                return false;
+            }
+            if ($ok && $q['x'] == '||') {
+                return true;
+            }
+        }
+        return $ok;
+    });
+    */
+}
+
+function evaluate($cond, $data) {
+    foreach ($cond as $k => $v) {
+        $ok = evaluate_single($k, $v, $data);
+        if (!$ok) {
+            return false;
+        }
+    }
+    return true;
+}
+function evaluate_single($l, $r, $op, $data) {
+    if ($l['t'] == 'k') {
+        $l['v'] = get_value($l['c'], $data);
+    } else {
+        $l['v'] = get_literal($l['c']);
+    }
+    if ($r['t'] == 'k') {
+        $r['v'] = get_value($r['c'], $data);
+    } else {
+        $r['v'] = get_literal($r['c']);
+    }
+
+    if ($op == '==') {
+        $cmp = __NAMESPACE__ . '\\' . 'cmp_eq';
+    } elseif ($op == 'matches') {
+        $cmp = __NAMESPACE__ . '\\' . 'cmp_matches';
+    } else {
+        return false;
+    }
+
+    return $cmp($l, $r);
+}
+
+function get_value($keys, $data) {
+    $current = array_shift($keys);
+
+    // nested?
+    if ($keys) {
+        return get_value($keys, $data[$current]);
+    }
+
+    if (!$data) {
+        return null;
+    }
+
+    if (!is_assoc($data)) {
+        return array_column($data, $current);
+    } else {
+        return $data[$current];
+    }
+}
+
+function get_literal($data) {
+    return $data;
 }
 
 function build_order_fun($order) {
@@ -203,31 +350,39 @@ function parse_condition($string) {
     //print_r($t);
     return $t;
 }
-
+/*
+l left
+r right
+t type (k key, v value)
+c content
+o operator
+x next logical operator (&& ||)
+*/
 function combine_tokens($tokens) {
-    $buffer = ['l' => ['t' => null, 'v' => []], 'o' => null, 'r' => ['t' => null, 'v' => []], 'x' => null];
+    $start = ['l' => ['t' => null, 'c' => []], 'o' => null, 'r' => ['t' => null, 'c' => []], 'x' => null];
+    $buffer = $start;
     $lr = 'l';
     $res = [];
     foreach ($tokens as $item) {
         if ($item == '&&' || $item == '||') {
             $buffer['x'] = $item;
             $res[] = $buffer;
-            $buffer = ['l' => ['t' => null, 'v' => []], 'o' => null, 'r' => ['t' => null, 'v' => []], 'x' => null];
+            $buffer = $start;
             $lr = 'l';
             continue;
         }
-        if (in_array($item, ['==', 'in', '!=', '>', '<', '<=', '>='])) {
+        if (in_array($item, ['==', 'in', '!=', '>', '<', '<=', '>=', 'matches'])) {
             $buffer['o'] = $item;
             $lr = 'r';
         } elseif ($item[0] == '"') {
-            $buffer[$lr]['v'][] = trim($item, '"');
+            $buffer[$lr]['c'][] = trim($item, '"');
             if (!$buffer[$lr]['t']) {
                 $buffer[$lr]['t'] = 'v';
             }
         } elseif (!in_array($item, ['[', ']', '.', ','])) {
-            $buffer[$lr]['v'][] = $item;
+            $buffer[$lr]['c'][] = $item;
             if (!$buffer[$lr]['t']) {
-                $buffer[$lr]['t'] = 'n';
+                $buffer[$lr]['t'] = 'k';
             }
         }
     }
@@ -248,13 +403,13 @@ function compact_tokens($t) {
     return $t;
 }
 
-function yyarray_map_recursive($fn, $arr) {
+function array_map_recursive($fn, $arr) {
     return array_map(function ($item) use ($fn) {
         return is_array($item) ? array_map($fn, $item) : $fn($item);
     }, $arr);
 }
 
-function array_map_recursive($callback, $array) {
+function xxarray_map_recursive($callback, $array) {
     $func = function ($item) use (&$func, &$callback) {
         return is_array($item) ? array_map($func, $item) : call_user_func($callback, $item);
     };

@@ -43,23 +43,29 @@ if ($obj_id) {
     $obj = get($ds, $obj_id);
 
     $template = $templates[$obj['_type']]['template'];
-
-    $content = template($template, $obj, $template_helper, $src);
+    dbg('template', $template, $obj);
+    $content = template($template, ['page' => $obj], $template_helper, $src);
 } else {
     list($dummy, $pagename, $pagenr) = explode('/', $requestpath);
     $pagename = '/' . $pagename;
     dbg('page...', $pagename, $pagenr, $requestpath);
     $obj_id = array_search($pagename, $pages);
-    $paginate = check_pagination($pagename, $src);
-    if ($paginate) {
+    $pagination_query = check_pagination($pagename, $src);
+    dbg('page query', $pagination_query);
+    if ($pagination_query) {
         //var_dump($paginate);
-        $coll = db_paginate($ds, $paginate, $pagenr);
+        $coll = query_page($ds, $pagination_query, $pagenr);
         //print_r($coll);
-        $content = page($pagename, ['paginated' => $coll], $template_helper, $src);
+        $content = page($pagename, ['collection' => $coll], $template_helper, $src);
         $content = remove_tags($content);
     } else {
         $content = page($requestpath, [], $template_helper, $src);
     }
 }
+
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
+header('Content-Type: text/html');
 
 print $content;
