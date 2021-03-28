@@ -28,13 +28,35 @@ $templates = [
     'artist' => function ($obj) {
         return '/artist/' . URLify::filter($obj['firstname'] . ' ' . $obj['familyname'], 60, 'de');
     },
-    'work' => '/works/:_id'
+    'work' => '/works/:_id',
+    'tag' => '/tag/:name'
 ];
 
 $hooks = [
-    'on_load' => function ($row) {
+    'on_load' => function ($row, &$db) {
         if ($row['tags']) {
-            $row['tags'] = split_tags($row['tags']);
+            $tags = split_tags($row['tags']);
+            $refs = [];
+            foreach ($tags as $t) {
+                $name = URLify::filter($t, 60, 'de');
+                $title = $t;
+                $id = 't-' . $name;
+                if ($db[$id]) {
+                    $db[$id]['works'][] = ['_ref' => $row['_id']];
+                } else {
+                    $db[$id] = [
+                        '_id' => $id,
+                        '_type' => 'tag',
+                        'name' => $name,
+                        'title' => $t,
+                        'works' => [
+                            ['_ref' => $row['_id']]
+                        ]
+                    ];
+                }
+                $refs[] = ['_ref' => $id];
+            }
+            $row['tags'] = $refs;
         }
         return $row;
     }

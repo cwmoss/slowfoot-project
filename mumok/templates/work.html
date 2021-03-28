@@ -46,9 +46,13 @@ $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.
 
 <div class="tags">
 	<ul class="tags">
-		<?if($page['tags']) foreach($page['tags'] as $tag){?>
-			<li><?=$tag?></li>
-			<?}?>
+		<?#var_dump($page['tags']);?>
+		<?if($page['tags']) foreach($page['tags'] as $t){
+			$tag = $ref($t);
+			?>
+			<li><a href="<?=$path($tag)?>"><?=$tag['title']?></a></li>
+			
+		<?}?>
 	</ul>
 	
 </div>

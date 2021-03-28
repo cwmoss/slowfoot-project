@@ -39,6 +39,8 @@ function make_path_fn($pattern) {
 function url_safe($path) {
     // TODO
     // https://gist.github.com/jaywilliams/119517
+    $path = str_replace([' '], ['-'], $path);
+    $path = strtolower($path);
     return $path;
 }
 
@@ -49,7 +51,7 @@ function load_data($dataset, $hooks) {
         $row = json_decode($line, true);
         $otype = $row['_type'];
         if ($hooks['on_load']) {
-            $row = $hooks['on_load']($row);
+            $row = $hooks['on_load']($row, $db);
         }
         if (!$row) {
             $rejected[$otype]++;
