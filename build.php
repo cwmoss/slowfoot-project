@@ -11,6 +11,8 @@ require_once 'helper.php';
 require_once 'slft_fun.php';
 include 'template_helper.php';
 
+include $src . '/helper.php';
+
 $dataset = 'dataset-mumok.ndjson';
 //$dataset = 'wp.json';
 

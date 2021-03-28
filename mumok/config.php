@@ -30,3 +30,12 @@ $templates = [
     },
     'work' => '/works/:_id'
 ];
+
+$hooks = [
+    'on_load' => function ($row) {
+        if ($row['tags']) {
+            $row['tags'] = split_tags($row['tags']);
+        }
+        return $row;
+    }
+];

@@ -41,7 +41,12 @@ $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.
 </ul>
 
 <div class="tags">
-	<?=$page['tags']?>
+	<ul class="tags">
+		<?foreach($page['tags'] as $tag){?>
+			<li><?=$tag?></li>
+			<?}?>
+	</ul>
+	
 </div>
 </section>
 

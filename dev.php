@@ -13,12 +13,16 @@ include 'routing.php';
 require_once 'slft_fun.php';
 include 'template_helper.php';
 
+include $src . '/helper.php';
+
 //$dataset = 'wp.json';
 $dataset = 'dataset-mumok.ndjson';
 
 $config = load_config($src);
 //print_r($config);
-$templates = $config;
+[$templates, $hooks] = $config;
+
+//var_dump($hooks);
 $ds = load_data($dataset, $hooks);
 
 $paths = array_reduce($templates, function ($res, $item) use ($ds) {

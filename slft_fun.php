@@ -16,7 +16,7 @@ function load_config($dir) {
         }
         $tpls[$name] = array_merge(['type' => $name, 'template' => $name], $t);
     }
-    return $tpls;
+    return [$tpls, $hooks];
 }
 
 function make_path_fn($pattern) {
