@@ -10,3 +10,6 @@ node_modules/
 .netrc
 .htaccess
 .DS_Store
+*.mdb
+movies.json
+data.ms

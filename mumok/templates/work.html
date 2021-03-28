@@ -6,8 +6,15 @@ layout('default');
 $links = [];
 $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.a.'; 
 ?>
-<section>
-<h2><?=$page['title']?></h2>
+<article>
+<h1><?=$title?></h1>
+
+<?if($page['default_image']){?>
+	<img id="image" data-src="<?=$page['default_image']?>" style="display:none;">
+<?}?>
+
+<div class="a-content">
+
 
 <p><strong><?=$page['title_de']?:$page['originaltitle']?></strong><br><br><?=$page['description_de']?></p>
 
@@ -21,9 +28,6 @@ $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.
 	<?=$page['material_en']?> <?=$page['measurement_width']?> x <?=$page['measurement_height']?> x <?=$page['measurement_depth']?> <?=$page['measurement_unit']?>
 </div>
 
-<?if($page['default_image']){?>
-	<img id="image" data-src="<?=$page['default_image']?>" style="display:none;">
-<?}?>
 
 <div class="production">
 	<?=$page['production_date']?><br>
@@ -42,13 +46,16 @@ $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.
 
 <div class="tags">
 	<ul class="tags">
-		<?foreach($page['tags'] as $tag){?>
+		<?if($page['tags']) foreach($page['tags'] as $tag){?>
 			<li><?=$tag?></li>
 			<?}?>
 	</ul>
 	
 </div>
-</section>
+
+</div>
+
+</article>
 
 <?php
 /*

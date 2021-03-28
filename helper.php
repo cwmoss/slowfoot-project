@@ -48,3 +48,22 @@ function markdown($text) {
     //$parser->setUrlsLinked(false);
     return $parser->text($text);
 }
+
+function fetch($url, $data) {
+    if (is_array($data)) {
+        $data = json_encode($data);
+    }
+    $options = [
+        'http' => [
+            'method' => 'POST',
+            'content' => $data,
+            'header' => "Content-Type: application/json\r\n" .
+                        "Accept: application/json\r\n"
+        ]
+    ];
+
+    $context = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
+    $response = json_decode($result);
+    return $response;
+}
