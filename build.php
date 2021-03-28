@@ -20,6 +20,8 @@ include $src . '/config.php';
 
 $ds = load_data($dataset, $hooks);
 
+print memory_get_usage() . " load ok\n";
+
 $paths = array_reduce($templates, function ($res, $item) use ($ds) {
     return array_merge($res, array_map(function ($obj) use ($item) {
         //print_r($obj);
@@ -46,6 +48,9 @@ $pages = array_map(function ($p) {
 
 //print 'clean up dist/';
 //`rm -rf $dist`;
+
+print_r($ds['_info']);
+exit;
 
 foreach ($templates as $type => $conf) {
     //$count = query('');

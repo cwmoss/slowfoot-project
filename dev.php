@@ -16,8 +16,9 @@ include 'template_helper.php';
 //$dataset = 'wp.json';
 $dataset = 'dataset-mumok.ndjson';
 
-include $src . '/config.php';
-
+$config = load_config($src);
+//print_r($config);
+$templates = $config;
 $ds = load_data($dataset, $hooks);
 
 $paths = array_reduce($templates, function ($res, $item) use ($ds) {
@@ -30,6 +31,8 @@ $paths = array_reduce($templates, function ($res, $item) use ($ds) {
 $paths = array_combine(array_column($paths, 0), array_column($paths, 1));
 //print_r($paths);
 //print $requestpath;
+
+//print_r($ds['_info']);
 
 $template_helper = load_template_helper($ds, $paths, $src);
 

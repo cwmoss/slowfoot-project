@@ -4,15 +4,61 @@ require_once 'lolql.php';
 use function lolql\parse;
 use function lolql\query as lquery;
 
+function load_config($dir) {
+    include $dir . '/config.php';
+    $tpls = [];
+    foreach ($templates as $name => $t) {
+        if (!is_array($t)) {
+            $t = ['path' => $t];
+        }
+        if (is_string($t['path'])) {
+            $t['path'] = make_path_fn($t['path']);
+        }
+        $tpls[$name] = array_merge(['type' => $name, 'template' => $name], $t);
+    }
+    return $tpls;
+}
+
+function make_path_fn($pattern) {
+    $replacements = [];
+    if (preg_match_all('!:([^/:]+)!', $pattern, $mat, PREG_SET_ORDER)) {
+        $replacements = $mat;
+    }
+    return function ($item) use ($pattern, $replacements) {
+        $path = $pattern;
+        $replacements = array_map(fn ($r) => [$r[0], url_safe($item[$r[1]])], $replacements);
+        $path = str_replace(
+            array_column($replacements, 0),
+            array_column($replacements, 1),
+            $path
+        );
+        return $path;
+    };
+}
+
+function url_safe($path) {
+    // TODO
+    // https://gist.github.com/jaywilliams/119517
+    return $path;
+}
+
 function load_data($dataset, $hooks) {
     $db = [];
+    $loaded = $rejected = [];
     foreach (file($dataset) as $line) {
         $row = json_decode($line, true);
+        $otype = $row['_type'];
         if ($hooks['on_load']) {
             $row = $hooks['on_load']($row);
         }
-        $db[$row['_id']] = $row;
+        if (!$row) {
+            $rejected[$otype]++;
+        } else {
+            $db[$row['_id']] = $row;
+            $loaded[$row['_type']]++;
+        }
     }
+    $db['_info'] = ['loaded' => $loaded, 'rejected' => $rejected];
     return $db;
 }
 

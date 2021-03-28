@@ -16,28 +16,17 @@ $hooks = [
         return $row;
     }
 ];
+
+$title = $obj['title_de'] ?? $obj['title_en'] ?? $obj['_id'];
+            return '/work/' . URLify::filter($title, 60, 'de');
+            return slugify($slugger, $obj['title_de'] ?? $obj['_id']);
+
 return ;
 */
 
 $templates = [
-    'artist' => [
-        'path' => function ($obj) use ($slugger) {
-            $title = $obj['firstname'] . ' ' . $obj['familyname'];
-            return '/artist/' . URLify::filter($title, 60, 'de');
-            return slugify($slugger, $obj['firstname'] . ' ' . $obj['familyname']);
-            return "/a/{$obj['_id']}";
-        },
-        'template' => 'artist',
-        'type' => 'artist'
-    ],
-    'work' => [
-        'path' => function ($obj) use ($slugger) {
-            $title = $obj['title_de'] ?? $obj['title_en'] ?? $obj['_id'];
-            return '/work/' . URLify::filter($title, 60, 'de');
-            return slugify($slugger, $obj['title_de'] ?? $obj['_id']);
-            return "/w/{$obj['_id']}";
-        },
-        'template' => 'work',
-        'type' => 'work'
-    ]
+    'artist' => function ($obj) {
+        return '/artist/' . URLify::filter($obj['firstname'] . ' ' . $obj['familyname'], 60, 'de');
+    },
+    'work' => '/works/:_id'
 ];
