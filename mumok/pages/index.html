@@ -21,7 +21,7 @@ layout('default');
         <aside>
             <h3><a href="<?=$path($art)?>"><?=$art['firstname']?> <?=$art['familyname']?></a></h3>
             <p><?=$art['birthyear']?><br>
-            <span class="lighter"><?=count($art['works']); ?> works</span>
+            <span class="lighter"><?=count($art['works'])?> <?=count($art['works']) > 1 ? 'works' : 'work'; ?></span>
             </p>
             <img class="maybenot" src="<?=$work['default_image']?>">
         </aside>
