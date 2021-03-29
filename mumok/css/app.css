@@ -88,3 +88,15 @@ section aside {
     border-bottom: 3px solid white; }
     section aside a:hover {
       border-bottom: 3px solid #fff44b; }
+
+ul.tags {
+  list-style-type: none;
+  padding: 0; }
+  ul.tags li {
+    display: inline-block;
+    background-color: black;
+    color: white;
+    padding: 2px 12px;
+    margin: 3px 6px 3px 0; }
+    ul.tags li a {
+      color: white; }
