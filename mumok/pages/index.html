@@ -4,9 +4,9 @@
     limit(20)
 </page-query>
 
-<?
+<?php
 
-layout("default");
+layout('default');
 //paginate("artist");
 
 // artist(tags in ["top"]) order(familyname) limit(20)
@@ -15,11 +15,39 @@ layout("default");
 <h1>Artists</h1>
 
 
-<ul>
-    <?foreach($collection['items'] as $art){?>
-        <li><a href="<?=$path($art)?>"><?=$art['firstname']?> <?=$art['familyname']?></a></li>
-    <?}?>
+<section>
+    <?foreach ($collection['items'] as $art) {
+    $work = $ref($art['works'][0]); ?>
+        <aside>
+            <h3><a href="<?=$path($art)?>"><?=$art['firstname']?> <?=$art['familyname']?></a></h3>
+            <p><?=$art['birthyear']?><br>
+            <span class="lighter"><?=count($art['works']); ?> works</span>
+            </p>
+            <img class="maybenot" src="<?=$work['default_image']?>">
+        </aside>
+    <?php
+}?>
 
-</ul>
+    </section>
 
-<?=$partial("pagination", ['page'=>'index', 'info'=>$collection['info']])?>
+<?=$partial('pagination', ['page' => 'index', 'info' => $collection['info']])?>
+
+<script>
+$('document').ready(function() {
+	console.log("init")
+// 250 × 32 is "couldn't get image"
+	$('img.maybenot').on('load', function(){
+		console.log('loaded', this)
+		if(this.width!=250 && this.height != 32){
+			$(this).css("display", "block")
+		}
+	}).each(function(){
+		console.log("img", this)
+		$(this).prop("src", $(this).data("src"))
+	})
+
+})
+
+
+
+</script>

@@ -10,7 +10,7 @@ $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.
 <h1><?=$title?></h1>
 
 <?if($page['default_image']){?>
-	<img id="image" data-src="<?=$page['default_image']?>" style="display:none;">
+	<img class="maybenot" data-src="<?=$page['default_image']?>" style="display:none;">
 <?}?>
 
 <div class="a-content">
@@ -35,14 +35,14 @@ $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.
 	<?=$page['exploitation_rights']?>
 </div>
 
-<ul class="artists">
+<div class="artists">
 	<?if($page['artists'])foreach($page['artists'] as $artref){
 		$art = $ref($artref);
 		
 		?>
-		<li><a href="<?=$path($art)?>"> <?=$art['firstname']?> <?=$art['familyname']?></a></li>
+		<section><a href="<?=$path($art)?>"> <?=$art['firstname']?> <?=$art['familyname']?></a></section>
 	<?}?>
-</ul>
+	</div>
 
 <div class="tags">
 	<ul class="tags">
@@ -69,28 +69,3 @@ $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.
 	   "originaltitle":"Konstruktion f\u00fcr einen Flughafen","default_image":"https:\/\/www.mumok.at\/imageobject.php?objid=1","inventorynr":"P 1\/0","measurement_unit":"cm"}
 */
 ?>
-<script>
-$('document').ready(function() {
-	console.log("init")
-// 250 × 32 is "couldn't get image"
-	$('#image').on('load', function(){
-		console.log('loaded', this)
-		if(this.width!=250 && this.height != 32){
-			$(this).css("display", "block")
-		}
-	}).each(function(){
-		console.log("img", this)
-		$(this).prop("src", $(this).data("src"))
-	})
-
-})
-
-/*
-const img = new Image();
-img.onload = function() {
-	alert(this.width + 'x' + this.height);
-}
-img.src = 'http://....';
-*/
-
-</script>
