@@ -105,7 +105,7 @@ function chunked_paginate($ds, $rule) {
             'prev' => ($page - 1) ?: null,
             'next' => (($page + 1) <= $totalpages) ?: null
         ];
-        yield [$res, $info];
+        yield ['items' => $res, 'info' => $info];
     }
 }
 
@@ -228,7 +228,7 @@ function partial($base, $template, $data, $helper) {
     extract($data);
     extract($helper);
     ob_start();
-    include $base . '/partials/' . $template . '.html';
+    include $base . '/partials/' . $template . '.php';
     $content = ob_get_clean();
     return $content;
 }
@@ -243,12 +243,12 @@ function template($_template, $data, $helper, $_base) {
     extract($data);
     extract($helper);
     ob_start();
-    include $_base . '/templates/' . $_template . '.html';
+    include $_base . '/templates/' . $_template . '.php';
     $content = ob_get_clean();
     $layout = layout();
     if ($layout) {
         ob_start();
-        include $_base . '/layout/' . $layout . '.html';
+        include $_base . '/layouts/' . $layout . '.php';
         $content = ob_get_clean();
     }
     return $content;
@@ -258,20 +258,20 @@ function page($_template, $data, $helper, $_base) {
     extract($data);
     extract($helper);
     ob_start();
-    include $_base . '/pages/' . $_template . '.html';
+    include $_base . '/pages/' . $_template . '.php';
 
     $content = ob_get_clean();
     $layout = layout();
     if ($layout) {
         ob_start();
-        include $_base . '/layout/' . $layout . '.html';
+        include $_base . '/layouts/' . $layout . '.php';
         $content = ob_get_clean();
     }
     return $content;
 }
 
 function check_pagination($_template, $_base) {
-    $content = file_get_contents($_base . '/pages/' . $_template . '.html');
+    $content = file_get_contents($_base . '/pages/' . $_template . '.php');
     $prule = preg_match('!<page-query>(.*?)</page-query>!ism', $content, $mat);
     if ($prule) {
         return parse($mat[1]);
@@ -283,12 +283,12 @@ function check_pagination($_template, $_base) {
 function page_paginated($_template, $data, $_base) {
     extract($data);
     ob_start();
-    include $_base . '/pages/' . $_template . '.html';
+    include $_base . '/pages/' . $_template . '.php';
     $content = ob_get_clean();
     $layout = layout();
     if ($layout) {
         ob_start();
-        include $_base . '/layout/' . $layout . '.html';
+        include $_base . '/layouts/' . $layout . '.php';
         $content = ob_get_clean();
     }
     return $content;
@@ -311,12 +311,12 @@ function process_template_data($data, $path) {
     $file_template = $templates[$data['_type']]['template'];
     extract($data);
     ob_start();
-    include $file_template . '.html';
+    include $file_template . '.php';
     $content = ob_get_clean();
     $layout = layout();
     if ($layout) {
         ob_start();
-        include 'templates/__' . $layout . '.html';
+        include 'templates/__' . $layout . '.php';
         $content = ob_get_clean();
     }
     write($content, $path);
@@ -334,8 +334,8 @@ function layout($name = null) {
     return $layout;
 }
 
-function write($content, $path) {
-    $file = __DIR__ . '/dist/' . $path . '/index.html';
+function write($content, $path, $base) {
+    $file = $base . '/' . $path . '/index.html';
     $dir = dirname($file);
     if (!is_dir($dir)) {
         mkdir($dir, 0777, true);

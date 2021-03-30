@@ -1,40 +1,5 @@
 <?php
-$loader = require __DIR__ . '/vendor/autoload.php';
-
-define('PATH_PREFIX', '/dev/slowfoot/dist/');
-
-$base = __DIR__;
-$src = $base . '/mumok';
-$dist = __DIR__ . '/dist/';
-
-require_once 'helper.php';
-require_once 'slft_fun.php';
-include 'template_helper.php';
-
-include $src . '/helper.php';
-
-$dataset = 'dataset-mumok.ndjson';
-//$dataset = 'wp.json';
-
-print memory_get_usage() . "\n";
-
-$config = load_config($src);
-//print_r($config);
-[$templates, $hooks] = $config;
-
-$ds = load_data($dataset, $hooks);
-
-print memory_get_usage() . " load ok\n";
-
-$paths = array_reduce($templates, function ($res, $item) use ($ds) {
-    return array_merge($res, array_map(function ($obj) use ($item) {
-        //print_r($obj);
-        return [$obj['_id'], $item['path']($obj)];
-    }, query($ds, ['_type' => $item['type']])));
-}, []);
-
-$paths = array_combine(array_column($paths, 0), array_column($paths, 1));
-//print_r($paths);
+require __DIR__ . '/boot.php';
 
 print memory_get_usage() . " paths ok\n";
 
@@ -45,16 +10,16 @@ print memory_get_usage() . " helper ok \n";
 //print_r(get($ds, 'p-20604'));
 //exit;
 
-$pages = glob($src . '/pages/*.html');
-$pages = array_map(function ($p) {
-    return '/' . basename($p, '.html');
-}, $pages);
-
-//print 'clean up dist/';
-//`rm -rf $dist`;
+if (!$dist) {
+    die('NO DIST-PATH FOUND');
+}
 
 print_r($ds['_info']);
-exit;
+
+print "clean up dist/\n\n";
+`rm -rf $dist`;
+
+// exit;
 
 foreach ($templates as $type => $conf) {
     //$count = query('');
@@ -65,15 +30,15 @@ foreach ($templates as $type => $conf) {
     foreach (query($ds, $type) as $row) {
         //	process_template_data($row, path($row['_id']));
         $path = fpath($paths, $row['_id']);
-        $content = template($conf['template'], $row, $template_helper, $src);
-        write($content, $path);
+        $content = template($conf['template'], ['page' => $row], $template_helper, $src);
+        write($content, $path, $dist);
     }
 }
 
 print memory_get_usage() . " templates ok\n";
 
 foreach ($pages as $pagename) {
-    //dbg('page... ', $pagename);
+    dbg('page... ', $pagename);
     $paginate = check_pagination($pagename, $src);
     $pagepath = $pagename;
     if ($pagepath == '/index') {
@@ -82,22 +47,22 @@ foreach ($pages as $pagename) {
     if ($paginate) {
         $pagenr = 1;
         $path = $pagepath;
-        foreach (chunked_paginate($ds, $paginate) as $res) {
-            //dbg('page', $pagenr);
-            $content = page($pagename, ['paginated' => $res], $template_helper, $src);
+        foreach (chunked_paginate($ds, $paginate) as $coll) {
+            dbg('page', $pagenr);
+            $content = page($pagename, ['collection' => $coll], $template_helper, $src);
             $content = remove_tags($content);
-            write($content, $pagepath);
+            write($content, $pagepath, $dist);
             $pagenr++;
             $pagepath = $path . '/' . $pagenr;
         }
     } else {
         $content = page($pagename, [], $template_helper, $src);
-        write($content, $pagepath);
+        write($content, $pagepath, $dist);
     }
 }
 
 print memory_get_usage() . " pages ok\n";
 
-`cp -R $src/css $dist/`;
+`cp -R $src/css $src/js $dist/`;
 
 print "finished\n";
