@@ -18,7 +18,9 @@ $dataset = 'dataset-mumok.ndjson';
 
 print memory_get_usage() . "\n";
 
-include $src . '/config.php';
+$config = load_config($src);
+//print_r($config);
+[$templates, $hooks] = $config;
 
 $ds = load_data($dataset, $hooks);
 
