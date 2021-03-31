@@ -1,0 +1,7 @@
+RewriteEngine On
+
+##RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteCond %{REQUEST_FILENAME} !-f [OR]
+RewriteCond %{REQUEST_FILENAME} "app.css$"
+RewriteRule ^ index.php [L]
