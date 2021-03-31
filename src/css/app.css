@@ -67,8 +67,9 @@ header {
 footer {
   max-width: none;
   width: 100%;
-  background-color: #fff3f3;
-  border-top: 1px solid #ddd; }
+  color: white;
+  background-color: #000000;
+  border-top: 1px solid black; }
   footer .content {
     max-width: var(--width-content);
     margin: 0 auto; }

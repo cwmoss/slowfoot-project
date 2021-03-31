@@ -49,9 +49,11 @@ https://www.codeinwp.com/snippets/sticky-footer-with-css/
 https://developer.mozilla.org/en-US/docs/Web/CSS/Layout_cookbook/Sticky_footers
 */
 
+
 html{
     
 }
+
 body {
   padding:0;
   display: flex;
@@ -78,9 +80,9 @@ header{
 footer{
     max-width: none;
     width:100%;
-    
-    background-color: #fff3f3;
-    border-top:1px solid #ddd;
+    color: white;
+    background-color: #000000;
+    border-top:1px solid rgb(0, 0, 0);
     .content{
         max-width: var(--width-content);
         margin:0 auto;
