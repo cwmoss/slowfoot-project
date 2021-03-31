@@ -39,8 +39,21 @@
     }
 }
 */
+* {
+  box-sizing: border-box; }
+
+/*
+https://www.codeinwp.com/snippets/sticky-footer-with-css/
+https://developer.mozilla.org/en-US/docs/Web/CSS/Layout_cookbook/Sticky_footers
+*/
 body {
-  padding: 0; }
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; }
+
+main {
+  flex: 1; }
 
 h1 {
   font-size: 6.25rem;
