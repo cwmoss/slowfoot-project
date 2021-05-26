@@ -1,7 +1,7 @@
 <page-query>
-    artist()
-    order(firstname, familyname) 
-    limit(48)
+    artist(familyname matches "F*")
+    order(familyname) 
+    limit(3)
 </page-query>
 
 <?php

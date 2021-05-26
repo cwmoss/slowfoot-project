@@ -41,7 +41,7 @@ $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.
     foreach ($page['artists'] as $artref) {
         $art = $ref($artref); ?>
 		<section><a href="<?=$path($art)?>"> <?=$art['firstname']?> <?=$art['familyname']?></a></section>
-	<?
+	<?php
     }
 }?>
 	</div>
@@ -54,7 +54,7 @@ $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.
         $tag = $ref($t); ?>
 			<li><a href="<?=$path($tag)?>"><?=$tag['title']?></a></li>
 			
-		<?
+		<?php
     }
 }?>
 	</ul>
