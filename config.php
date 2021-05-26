@@ -23,41 +23,49 @@ $title = $obj['title_de'] ?? $obj['title_en'] ?? $obj['_id'];
 
 return ;
 */
-
-$templates = [
-    'artist' => function ($obj) {
-        return '/artist/' . URLify::filter($obj['firstname'] . ' ' . $obj['familyname'], 60, 'de');
-    },
-    'work' => '/works/:_id',
-    'tag' => '/tag/:name'
-];
-
-$hooks = [
-    'on_load' => function ($row, &$db) {
-        if ($row['tags']) {
-            $tags = split_tags($row['tags']);
-            $refs = [];
-            foreach ($tags as $t) {
-                $name = URLify::filter($t, 60, 'de');
-                $title = $t;
-                $id = 't-' . $name;
-                if ($db[$id]) {
-                    $db[$id]['works'][] = ['_ref' => $row['_id']];
-                } else {
-                    $db[$id] = [
-                        '_id' => $id,
-                        '_type' => 'tag',
-                        'name' => $name,
-                        'title' => $t,
-                        'works' => [
-                            ['_ref' => $row['_id']]
-                        ]
-                    ];
+return [
+    'site_name' => 'mumok Demo',
+    'site_description' => 'look at beautiful works of art',
+    'site_url' => '',
+    'path_prefix' => '',
+    'title_template' => '',
+    'sources' => [
+        'dataset' => 'dataset-mumok.ndjson'
+    ],
+    'templates' => [
+        'artist' => function ($obj) {
+            return '/artist/' . URLify::filter($obj['firstname'] . ' ' . $obj['familyname'], 60, 'de');
+        },
+        'work' => '/works/:_id',
+        'tag' => '/tag/:name'
+    ],
+    'hooks' => [
+        'on_load' => function ($row, &$db) {
+            if ($row['tags']) {
+                $tags = split_tags($row['tags']);
+                $refs = [];
+                foreach ($tags as $t) {
+                    $name = URLify::filter($t, 60, 'de');
+                    $title = $t;
+                    $id = 't-' . $name;
+                    if ($db[$id]) {
+                        $db[$id]['works'][] = ['_ref' => $row['_id']];
+                    } else {
+                        $db[$id] = [
+                            '_id' => $id,
+                            '_type' => 'tag',
+                            'name' => $name,
+                            'title' => $t,
+                            'works' => [
+                                ['_ref' => $row['_id']]
+                            ]
+                        ];
+                    }
+                    $refs[] = ['_ref' => $id];
                 }
-                $refs[] = ['_ref' => $id];
+                $row['tags'] = $refs;
             }
-            $row['tags'] = $refs;
+            return $row;
         }
-        return $row;
-    }
+    ]
 ];

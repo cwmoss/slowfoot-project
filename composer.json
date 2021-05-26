@@ -3,13 +3,21 @@
     "type": "project",
     "version": "1.0",
     "repositories": [
+       
         {
-            "type": "git",
-            "url": "https://github.com/cwmoss/slowfoot-lib"
-           
+        "type": "path",
+        "url": "../slowfoot-lib",
+        "options": {
+          "symlink": true
+            }
         }
     ],
+    "autoload": {
+        "files": [
+            "src/helper.php"
+        ]
+    },
     "require": {
-        "cwmoss/slowfoot-lib": "dev-main"
+        "cwmoss/slowfoot-lib": "@dev"
     }
 }
