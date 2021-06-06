@@ -5,6 +5,18 @@ layout('default');
 //var_dump($links);
 $links = [];
 $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.a.';
+
+/*
+{"_id":"w-104728","_type":"work","title_de":null,"acquiry_date":"1961","material_en":"Watercolor on paper","artists":[{"_ref":"a-102182"}],
+"description_de":null,"production_date":"1919","measurement_width":20,"@id":"http:\/\/www.mumok.at\/node\/104728",
+"tags":"Klassische Moderne, Abstraktion, Grafik, Dada, Konstruktion, Konstruktivismus, Deutschland, Dadaismus, \u00d6sterreich",
+"measurement_height":31.4,"inventorynr_sorted":"G 00002\/000","creditline":"Schenkung des K\u00fcnstlers\/donation of the artist",
+"title_en":"Abstract Pictorial Idea","description_en":null,"in_exhibition":"yes",
+"exploitation_rights":"Bildrecht, Wien","material_de":"Aquarell auf Papier","measurement_depth":null,
+"originaltitle":"Abstrakte Bildidee","default_image":"https:\/\/www.mumok.at\/imageobject.php?objid=21",
+"inventorynr":"G 2\/0","measurement_unit":"cm"}
+
+*/
 ?>
 <article>
 <h1><?=$title?></h1>

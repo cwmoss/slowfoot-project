@@ -18,6 +18,7 @@
         ]
     },
     "require": {
-        "cwmoss/slowfoot-lib": "@dev"
+        "cwmoss/slowfoot-lib": "@dev",
+        "sanity/sanity-php": "^1.5"
     }
 }

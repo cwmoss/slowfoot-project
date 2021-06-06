@@ -1,46 +1,49 @@
 <?php
-/*
-$templates = [
-    'post' => [
-        'path' => function ($obj) {
-            return '/' . $obj['slug'];
-        },
-        'template' => 'post',
-        'type' => 'post'
-    ]
-];
 
-$hooks = [
-    'on_load' => function ($row) {
-        $row['text'] = str_replace(['\\n', '\\r'], ["\n", "\r"], $row['text']);
-        return $row;
-    }
-];
-
-$title = $obj['title_de'] ?? $obj['title_en'] ?? $obj['_id'];
-            return '/work/' . URLify::filter($title, 60, 'de');
-            return slugify($slugger, $obj['title_de'] ?? $obj['_id']);
-
-return ;
-*/
 return [
     'site_name' => 'mumok Demo',
     'site_description' => 'look at beautiful works of art',
     'site_url' => '',
-    'path_prefix' => '',
+    'path_prefix' => $_ENV['PATH_PREFIX'] ?: '',
     'title_template' => '',
     'sources' => [
-        'dataset' => 'dataset-mumok.ndjson'
+        'dataset' => 'dataset-mumok.ndjson',
+        'sanity' => [
+            'dataset' => 'production',
+            'projectId' => $_ENV['SANITY_ID'],
+            'useCdn' => true
+        ]
+    ],
+    'preview' => [
+        'sanity' => [
+            'dataset' => 'production',
+            'projectId' => $_ENV['SANITY_ID'],
+            'useCdn' => false,
+            //'withCredentials' => true,
+            'token' => $_ENV['SANITY_TOKEN']
+        ]
     ],
     'templates' => [
         'artist' => function ($obj) {
             return '/artist/' . URLify::filter($obj['firstname'] . ' ' . $obj['familyname'], 60, 'de');
         },
-        'work' => '/works/:_id',
-        'tag' => '/tag/:name'
+        'work' => [
+            '/works/:_id',
+            [
+                'name' => 'en',
+                'path' => '/works/:_id/en'
+            ]
+        ],
+        'tag' => '/tag/:name',
+        'newsletter' => '/newsletter/:slug.current'
+        //fn ($doc) => 'newsletter/' . $doc['slug']['current']
     ],
     'hooks' => [
         'on_load' => function ($row, &$db) {
+            // [_id] => a-_a:325
+            if (preg_match('/:/', $row['_id'])) {
+                return null;
+            }
             if ($row['tags']) {
                 $tags = split_tags($row['tags']);
                 $refs = [];
