@@ -3,6 +3,11 @@ layout('default');
 
 //$links = query('*[_id=="$id"]{articles[]->, pix[]->}[0]', ['id' =>$_id]);
 //var_dump($links);
+$lang = 'de';
+if ($path_name == 'en') {
+    $lang = 'en';
+}
+
 $links = [];
 $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.a.';
 
@@ -27,20 +32,29 @@ $title = $page['originaltitle'] ?? $page['title_de'] ?? $page['title_en'] ?? 'k.
 
 <div class="a-content">
 
+<p>
+<?if ($lang == 'de') {?>
+	<a href="<?=$path($page, 'en')?>">english</a>
+<?} else {?>
+	<a href="<?=$path($page)?>">deutsch</a>
+<?}?>
+</p>
 
-
+<?if ($lang == 'de') {?>
 <p><strong><?=$page['title_de'] ?: $page['originaltitle']?></strong><br><br><?=$page['description_de']?></p>
 
 <div class="material">
 	<?=$page['material_de']?> <?=$page['measurement_width']?> x <?=$page['measurement_height']?> x <?=$page['measurement_depth']?> <?=$page['measurement_unit']?>
 </div>
+<?}?>
 
+<?if ($lang == 'en') {?>
 <p><strong><?=$page['title_en']?></strong><br><br><?=$page['description_en']?></p>
 
 <div class="material">
 	<?=$page['material_en']?> <?=$page['measurement_width']?> x <?=$page['measurement_height']?> x <?=$page['measurement_depth']?> <?=$page['measurement_unit']?>
 </div>
-
+<?}?>
 
 <div class="production">
 	<?=$page['production_date']?><br>

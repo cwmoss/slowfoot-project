@@ -4,7 +4,8 @@ return [
     'site_name' => 'mumok Demo',
     'site_description' => 'look at beautiful works of art',
     'site_url' => '',
-    'path_prefix' => $_ENV['PATH_PREFIX'] ?: '',
+    // TODO: solve genenv vs ENV problem
+    'path_prefix' => getenv('PATH_PREFIX') ?: $_ENV['PATH_PREFIX'] ?: '',
     'title_template' => '',
     'sources' => [
         'dataset' => 'dataset-mumok.ndjson',
