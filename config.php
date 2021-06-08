@@ -46,6 +46,11 @@ return [
             if (preg_match('/:/', $row['_id'])) {
                 return null;
             }
+            /*
+                works.tags should become a object of type 'tag'
+                make reverse reference from tag to works via tag.works
+                this will be faster to query for tag pages
+            */
             if ($row['tags']) {
                 $tags = split_tags($row['tags']);
                 $refs = [];
@@ -55,9 +60,7 @@ return [
                     $id = 't-' . $name;
                     $exists = $ds->get($id);
                     if ($exists) {
-                        dbg('++ add tag', $id);
-                        $exists['works'][] = ['_ref' => $row['_id']];
-                        $ds->update($id, $exists);
+                        $ds->add_ref($id, 'works', $row);
                     } else {
                         $ds->add(
                             $id,
