@@ -9,11 +9,12 @@ return [
     'title_template' => '',
     'sources' => [
         'dataset' => 'dataset-mumok.ndjson',
-        'sanity' => [
+        /* 'sanity' => [
             'dataset' => 'production',
             'projectId' => $_ENV['SANITY_ID'],
             'useCdn' => true
-        ]
+            ]
+        */
     ],
     'preview' => [
         'sanity' => [
@@ -40,7 +41,7 @@ return [
         //fn ($doc) => 'newsletter/' . $doc['slug']['current']
     ],
     'hooks' => [
-        'on_load' => function ($row, &$db) {
+        'on_load' => function ($row, $ds) {
             // [_id] => a-_a:325
             if (preg_match('/:/', $row['_id'])) {
                 return null;
@@ -52,18 +53,24 @@ return [
                     $name = URLify::filter($t, 60, 'de');
                     $title = $t;
                     $id = 't-' . $name;
-                    if ($db[$id]) {
-                        $db[$id]['works'][] = ['_ref' => $row['_id']];
+                    $exists = $ds->get($id);
+                    if ($exists) {
+                        dbg('++ add tag', $id);
+                        $exists['works'][] = ['_ref' => $row['_id']];
+                        $ds->update($id, $exists);
                     } else {
-                        $db[$id] = [
-                            '_id' => $id,
-                            '_type' => 'tag',
-                            'name' => $name,
-                            'title' => $t,
-                            'works' => [
-                                ['_ref' => $row['_id']]
+                        $ds->add(
+                            $id,
+                            [
+                                '_id' => $id,
+                                '_type' => 'tag',
+                                'name' => $name,
+                                'title' => $t,
+                                'works' => [
+                                    ['_ref' => $row['_id']]
+                                ]
                             ]
-                        ];
+                        );
                     }
                     $refs[] = ['_ref' => $id];
                 }
