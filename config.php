@@ -65,7 +65,6 @@ return [
                         $ds->add(
                             $id,
                             [
-                                '_id' => $id,
                                 '_type' => 'tag',
                                 'name' => $name,
                                 'title' => $t,
