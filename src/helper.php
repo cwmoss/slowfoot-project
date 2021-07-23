@@ -26,10 +26,8 @@ function load_preview_object($id, $type = null, $config) {
 
 function load_sanity($opts, $config) {
     $client = sanity_client($opts);
-    $res = $client->fetch(
-        '*[_type == $type]',
-        ['type' => 'newsletter']
-    );
+    $query = $config['query'] ?? '*[!(_type match "system.*") && !(_id in path("drafts.**"))]';
+    $res = $client->fetch($query);
     return $res;
 }
 

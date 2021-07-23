@@ -8,13 +8,19 @@ return [
     'path_prefix' => getenv('PATH_PREFIX') ?: $_ENV['PATH_PREFIX'] ?: '',
     'title_template' => '',
     'sources' => [
-        'dataset' => 'dataset-mumok.ndjson',
-        /* 'sanity' => [
+        /*'dataset' => 'dataset-mumok.ndjson', */
+        'sanity' => [
             'dataset' => 'production',
             'projectId' => $_ENV['SANITY_ID'],
-            'useCdn' => true
-            ]
-        */
+            'useCdn' => true,
+            // 'query' => '*[_type=="custom-type-query"]'
+        ]
+        /*
+        'csv' => [
+            'file' => '../movie-dataset-archive/movies_metadata.csv',
+            'jsol' => true,
+            'type' => 'movie'
+        ]*/
     ],
     'preview' => [
         'sanity' => [
@@ -37,8 +43,24 @@ return [
             ]
         ],
         'tag' => '/tag/:name',
-        'newsletter' => '/newsletter/:slug.current'
+        'newsletter' => '/newsletter/:slug.current',
+        'gallery_page' => '/g/:slug.current',
+        'movie' => '/movie/:_id'
         //fn ($doc) => 'newsletter/' . $doc['slug']['current']
+    ],
+    'assets' => [
+        'dir' => 'images',
+        'path' => '/images',
+        'profiles' => [
+            'small' => [
+                's' => '600x400',
+                'mode' => 'fit'
+            ],
+            'gallery' => [
+                's' => '700x', 
+                '4c' => ['creator'=>'Robbie Øfchen']
+            ]
+        ]
     ],
     'hooks' => [
         'on_load' => function ($row, $ds) {

@@ -1,3 +1,8 @@
+<?php
+$settings = $get('site_settings');
+$title = $settings['title'];
+$nav = $ref($settings['nav_main']);
+?>
 <!doctype html>
 <html>
 <head>
@@ -14,7 +19,14 @@
     <header>
 <nav>
     <span>MUMOK</span>
-    <ul><li><a href="<?=path_page('/')?>">Artists</a></li>
+    <ul>
+    <?foreach ($nav['items'] as $n) {
+    $url = $n['link']['internal'] ? $path($n['link']['internal']['_ref']) : $n['link']['external'];
+    $txt = $n['text']; ?>
+        <li><a href="<?=$url?>"><?=$txt?></a></li>
+    <?php
+}?>
+    <li><a href="<?=path_page('/')?>">Artists</a></li>
     </ul>
 </nav>
 </header>
