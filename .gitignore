@@ -13,3 +13,5 @@ node_modules/
 *.mdb
 movies.json
 data.ms
+images/*
+cache/*
