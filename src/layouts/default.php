@@ -2,6 +2,7 @@
 $settings = $get('site_settings');
 $title = $settings['title'];
 $nav = $ref($settings['nav_main']);
+$nav = ['items'=>[]];
 ?>
 <!doctype html>
 <html>

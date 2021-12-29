@@ -1,4 +1,4 @@
-<page-query>
+<page-query paginate="50">
     movie()
     # order(familyname) 
     limit(50)

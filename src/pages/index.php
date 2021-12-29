@@ -1,4 +1,4 @@
-<!-- page-query>
+<page-query paginate="20">
     artist(familyname matches "F*")
     order(familyname) 
     limit(50)
@@ -10,15 +10,15 @@ layout('default');
 //paginate("artist");
 $items = $q("SELECT body FROM docs WHERE _type='artist' AND json_extract(body, '$.familyname') like 'F%'");
 // artist(tags in ["top"]) order(familyname) limit(20)
-#var_dump($items);
-//$items = $collection['items'];
+#print_r($page);
 ?>
 
 <h1>Artists</h1>
-
+<? #print_r($page);
+?>
 
 <section>
-    <?foreach ($items as $art) {
+    <?foreach ($page as $art) {
     $work = $ref($art['works'][0]); ?>
         <aside>
             <h3><a href="<?=$path($art)?>"><?=$art['firstname']?> <?=$art['familyname']?></a></h3>

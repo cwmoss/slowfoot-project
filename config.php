@@ -7,7 +7,6 @@ return [
     // TODO: solve genenv vs ENV problem
     'path_prefix' => getenv('PATH_PREFIX') ?: $_ENV['PATH_PREFIX'] ?: '',
     'title_template' => '',
-    // 'store' => 'sqlite:memory',
     'store' => 'sqlite',
     'sources' => [
         'dataset' => 'dataset-mumok.ndjson', 

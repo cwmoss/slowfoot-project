@@ -11,6 +11,7 @@ node_modules/
 .htaccess
 .DS_Store
 *.mdb
+*.db
 movies.json
 data.ms
 images/*
