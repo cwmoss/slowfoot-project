@@ -12,7 +12,7 @@ if ($page['works']) {
         return $ref($w);
     }, $page['works']);
 }
-var_dump($page);
+#var_dump($page);
 ?>
 <article>
 <h1><?=$page['title']?></h1>

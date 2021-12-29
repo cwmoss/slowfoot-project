@@ -2,15 +2,15 @@
     artist(familyname matches "F*")
     order(familyname) 
     limit(50)
-</page-query -->
+</page-query>
 
 <?php
 
 layout('default');
 //paginate("artist");
-$items = $q("SELECT body FROM docs WHERE _type='artist' AND json_extract(body, '$.familyname') like 'F%'");
+//$items = $q("SELECT body FROM docs WHERE _type='artist' AND json_extract(body, '$.familyname') like 'F%'");
 // artist(tags in ["top"]) order(familyname) limit(20)
-#print_r($page);
+#var_dump($page);
 ?>
 
 <h1>Artists</h1>
