@@ -20,7 +20,7 @@ $nav = $ref($settings['nav_main']);
 <nav>
     <span>MUMOK</span>
     <ul>
-    <?foreach ($nav['items'] as $n) {
+    <?if($nav['items']) foreach ($nav['items'] as $n) {
     $url = $n['link']['internal'] ? $path($n['link']['internal']['_ref']) : $n['link']['external'];
     $txt = $n['text']; ?>
         <li><a href="<?=$url?>"><?=$txt?></a></li>

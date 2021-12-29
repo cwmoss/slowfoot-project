@@ -7,14 +7,18 @@ return [
     // TODO: solve genenv vs ENV problem
     'path_prefix' => getenv('PATH_PREFIX') ?: $_ENV['PATH_PREFIX'] ?: '',
     'title_template' => '',
+    // 'store' => 'sqlite:memory',
+    'store' => 'sqlite',
     'sources' => [
-        /*'dataset' => 'dataset-mumok.ndjson', */
+        'dataset' => 'dataset-mumok.ndjson', 
+        /*
         'sanity' => [
             'dataset' => 'production',
             'projectId' => $_ENV['SANITY_ID'],
             'useCdn' => true,
             // 'query' => '*[_type=="custom-type-query"]'
         ]
+        */
         /*
         'csv' => [
             'file' => '../movie-dataset-archive/movies_metadata.csv',
