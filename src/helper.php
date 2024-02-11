@@ -1,16 +1,17 @@
 <?php
 
 use Sanity\Client as SanityClient;
+use slowfoot\configuration;
 
 if (!defined('SLOWFOOT_BASE')) {
     define('SLOWFOOT_BASE', __DIR__ . '/../');
 }
 
-function load_preview_object($id, $type = null, $config) {
+function load_preview_object($id, $type, configuration $config) {
     // print_r($config);
     //print_r(apache_request_headers());
     //print_r($_COOKIE);
-    $client = sanity_client($config['preview']['sanity']);
+    $client = sanity_client($config->preview['sanity']);
 
     $document = $client->getDocument($id);
     //print_r($document);

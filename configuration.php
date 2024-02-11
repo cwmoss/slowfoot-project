@@ -1,15 +1,13 @@
 <?php
 
-return [
-    'site_name' => 'mumok Demo',
-    'site_description' => 'look at beautiful works of art',
-    'site_url' => '',
-    // TODO: solve genenv vs ENV problem
-    'path_prefix' => getenv('PATH_PREFIX') ?: $_ENV['PATH_PREFIX'] ?: '',
-    'title_template' => '',
-    'store' => 'sqlite',
-    'sources' => [
-        'dataset' => 'dataset-mumok.ndjson', 
+use slowfoot\configuration;
+use slowfoot\loader\dataset;
+
+return new configuration(
+    site_name: 'mumok Demo',
+    site_description: 'look at beautiful works of art',
+    sources: [
+        'dataset' => new dataset(file: 'dataset-mumok.ndjson'),
         /*
         'sanity' => [
             'dataset' => 'production',
@@ -25,16 +23,7 @@ return [
             'type' => 'movie'
         ]*/
     ],
-    'preview' => [
-        'sanity' => [
-            'dataset' => 'production',
-            'projectId' => $_ENV['SANITY_ID'],
-            'useCdn' => false,
-            //'withCredentials' => true,
-            'token' => $_ENV['SANITY_TOKEN']
-        ]
-    ],
-    'templates' => [
+    templates: [
         'artist' => function ($obj) {
             return '/artist/' . URLify::filter($obj['firstname'] . ' ' . $obj['familyname'], 60, 'de');
         },
@@ -51,7 +40,16 @@ return [
         'movie' => '/movie/:_id'
         //fn ($doc) => 'newsletter/' . $doc['slug']['current']
     ],
-    'assets' => [
+    preview: [
+        'sanity' => [
+            'dataset' => 'production',
+            'projectId' => $_ENV['SANITY_ID'],
+            'useCdn' => false,
+            //'withCredentials' => true,
+            'token' => $_ENV['SANITY_TOKEN']
+        ]
+    ],
+    assets: [
         'dir' => 'images',
         'path' => '/images',
         'profiles' => [
@@ -60,12 +58,12 @@ return [
                 'mode' => 'fit'
             ],
             'gallery' => [
-                's' => '700x', 
-                '4c' => ['creator'=>'Robbie Øfchen']
+                's' => '700x',
+                '4c' => ['creator' => 'Robbie Øfchen']
             ]
         ]
     ],
-    'hooks' => [
+    hooks: [
         'on_load' => function ($row, $ds) {
             // [_id] => a-_a:325
             if (preg_match('/:/', $row['_id'])) {
@@ -106,4 +104,4 @@ return [
             return $row;
         }
     ]
-];
+);
