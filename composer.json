@@ -16,7 +16,7 @@
   "scripts": {
     "post-install-cmd": "@setup",
     "post-update-cmd": "@setup",
-    "setup": "@php slowfoot setup"
+    "setup": "vendor/bin/slowfoot setup"
   },
   "require": {
     "cwmoss/slowfoot-lib": "@dev",
