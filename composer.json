@@ -4,8 +4,11 @@
   "version": "1.0",
   "repositories": [
     {
-      "type": "vcs",
-      "url": "https://github.com/cwmoss/slowfoot-lib"
+      "type": "path",
+      "url": "../slowfoot-lib",
+      "options": {
+        "symlink": true
+      }
     }
   ],
   "autoload": {

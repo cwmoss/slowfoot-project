@@ -2,6 +2,7 @@
 
 use slowfoot\configuration;
 use slowfoot\loader\dataset;
+use slowfoot\store;
 
 return new configuration(
     site_name: 'mumok Demo',
@@ -64,7 +65,7 @@ return new configuration(
         ]
     ],
     hooks: [
-        'on_load' => function ($row, $ds) {
+        'on_load' => function (array $row, store $ds) {
             // [_id] => a-_a:325
             if (preg_match('/:/', $row['_id'])) {
                 return null;
@@ -74,7 +75,7 @@ return new configuration(
                 make reverse reference from tag to works via tag.works
                 this will be faster to query for tag pages
             */
-            if ($row['tags']) {
+            if ($row['tags'] ?? null) {
                 $tags = split_tags($row['tags']);
                 $refs = [];
                 foreach ($tags as $t) {
