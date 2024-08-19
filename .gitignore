@@ -1,5 +1,6 @@
 etc/
 vendor/
+var/
 logs/
 draft/
 dist/
