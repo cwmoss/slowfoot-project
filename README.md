@@ -25,3 +25,13 @@ chmod +x pgclimb
 # strongly recommended
 brew install sassc
 ```
+
+"repositories": [
+{
+"type": "path",
+"url": "../slowfoot-lib",
+"options": {
+"symlink": true
+}
+}
+],

@@ -1,9 +1,0 @@
-#!/usr/bin/env php
-<?php
-
-define('SLOWFOOT_START', microtime(true));
-define('SLOWFOOT_BASE', __DIR__);
-
-require __DIR__ . '/vendor/autoload.php';
-
-require __DIR__ . '/vendor/cwmoss/slowfoot-lib/src/command.php';

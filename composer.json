@@ -1,14 +1,11 @@
 {
-  "name": "cwmoss/slowfoot",
+  "name": "cwmoss/slowfoot-project",
   "type": "project",
   "version": "1.0",
   "repositories": [
     {
-      "type": "path",
-      "url": "../slowfoot-lib",
-      "options": {
-        "symlink": true
-      }
+      "url": "https://github.com/cwmoss/slowfoot.git",
+      "type": "git"
     }
   ],
   "autoload": {
@@ -22,7 +19,7 @@
     "setup": "vendor/bin/slowfoot setup"
   },
   "require": {
-    "cwmoss/slowfoot-lib": "@dev",
+    "cwmoss/slowfoot": "dev-main",
     "sanity/sanity-php": "^1.5"
   }
 }
